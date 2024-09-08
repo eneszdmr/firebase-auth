@@ -1,7 +1,8 @@
 import React from 'react'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { ToastContainer, toast } from 'react-toastify';
 import { auth } from '../Firebase';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -9,7 +10,7 @@ function Auth() {
 
     const [email, setEmail] = React.useState('')
     const [password, setPassword] = React.useState('')
-    const notify = () => toast("Wow so easy!");
+    const navigate = useNavigate();
 
 
     async function handleRegister() {
@@ -25,9 +26,21 @@ function Auth() {
         } catch (error) {
             toast.error(error.message)
         }
+    }
 
+    const handleLogin = async () => {
+        try {
+            const res = await signInWithEmailAndPassword(auth, email, password);
+            const user = res.user;
+            if (user) {
+                toast.success("giriş başarılı");
+                navigate("/");
+            }
 
+        } catch (error) {
+            toast.error(error.message)
 
+        }
     }
 
     return (
@@ -38,7 +51,7 @@ function Auth() {
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='sifre giriniz' />
             </div>
             <div>
-                <button className='button-custom'>Giris Yap</button>
+                <button onClick={handleLogin} className='button-custom'>Giriş Yap</button>
                 <button onClick={handleRegister} className='button-custom'>Kayıt ol</button>
             </div>
             <div>
