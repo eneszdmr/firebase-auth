@@ -1,10 +1,10 @@
 import React from 'react'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { ToastContainer, toast } from 'react-toastify';
 import { auth } from '../Firebase';
 import { useNavigate } from 'react-router-dom';
 
-
+const provider = new GoogleAuthProvider();
 
 function Auth() {
 
@@ -12,6 +12,27 @@ function Auth() {
     const [password, setPassword] = React.useState('')
     const navigate = useNavigate();
 
+    const loginGoogle = async () => {
+        try {
+            const response = await signInWithPopup(auth, provider);
+            console.log("response", response)
+
+            const credential = GoogleAuthProvider.credentialFromResult(response);
+            console.log("credential", credential)
+
+            const user = response.user;
+            console.log("user", user)
+
+            if (user) {
+                toast.success("giriş Google ile başarılı" + user.displayName);
+                navigate("/")
+            }
+
+        } catch (error) {
+
+            toast.error(error.message)
+        }
+    }
 
     async function handleRegister() {
         try {
@@ -55,7 +76,7 @@ function Auth() {
                 <button onClick={handleRegister} className='button-custom'>Kayıt ol</button>
             </div>
             <div>
-                <button className='button-google'>Google ile Giriş Yap</button>
+                <button onClick={loginGoogle} className='button-google'>Google ile Giriş Yap</button>
             </div>
         </div>
     )
